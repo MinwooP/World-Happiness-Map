@@ -4,6 +4,8 @@
     <br>Minwoo Park</p>
 
 ------
+<img src = "https://user-images.githubusercontent.com/31370590/220034030-1aff7e82-2fb6-4132-a4ad-ac9be95944a7.mp4">
+<br>
 
 #### 📌 General Idea 
 
