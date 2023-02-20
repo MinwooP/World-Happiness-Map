@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>World Happiness map</title>
+    <link href="https://playground.anychart.com/efdxRDjm/iframe" rel="canonical" />
+    <link rel="stylesheet" href="../css/Happiness_map.css"/>
+    <meta content="AJAX Chart,Chart from JSON,Choropleth Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot"
+        name="keywords" />
+    <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description" />
+
+    <style>
+        html,
+        body, 
+        #container {
+            width: 100%;    
+            height: 100%;
+            margin: 0px 0px -25px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"> </div>
+    <input type="checkbox" id="toggle"/>
+    <label class="button" for="toggle"></label>
+    <nav class="nav">
+        <ul>
+            <a href="GDP_map.html">World GDP Map</a>
+            <a href="Health_map.html">World Health Map</a>
+            <a href="Freedom_map.html">World Freedom Map</a>
+            <a href="Generosity_map.html">World Generosity Map</a>
+            <a href="Happiness_graph.html">Happiness Graph</a>
+        </ul> 
+    </nav>
+    
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-map.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/geodata/custom/world/world.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-data-adapter.min.js"></script>
+    
+
+    <script type="module">
+        import happiness_data from '../data/2021_Data.json' assert {type: 'json'};
+        import geoId_data from '../data/Geo_Id.json' assert {type: 'json'};
+
+        anychart.onDocumentReady(function () {
+            var data = [];
+
+            for (var i = 0; i < happiness_data.length; i++) {
+                var countryName = happiness_data[i]["Country name"]
+
+                for (var j = 0; j < geoId_data.length; j++) {
+                    if (countryName == geoId_data[j]["name"]) {
+                        data.push({
+                            name: countryName,
+                            value: parseFloat(happiness_data[i]["Ladder score"]),
+                            id: geoId_data[j]["code"],
+                            rank: i + 1
+                        })
+                        break;
+                    }
+                }
+            }
+
+            // connect the data with the map
+            var chart = anychart.map(data);
+
+            chart.geoData(anychart.maps.world);
+
+            // specify the chart type and set the series 
+            var series = chart.choropleth(data);
+
+            // tooltip formatting
+            series.tooltip().format("Happiness score: {%value}\nHappiness ranking: {%rank}/147");
+
+            // set the chart title
+            // set the title and its preferences
+            chart.title().useHtml(true).hAlign('center');
+            chart.title('<span style= "font-size:27px; font-family:"sans-serif";">World Happiness Map</span>');
+
+            var cr = chart.colorRange(true);
+            // colorRange.orientation('right');
+            // var marker = cr.marker();
+
+            // color scale ranges
+            var ocs = anychart.scales.ordinalColor([
+                { less: 1 }, // minimun happiness score is 2.5xx
+                { from: 2, to: 3 },
+                { from: 3, to: 4 },
+                { from: 4, to: 5 },
+                { from: 5, to: 6 },
+                { from: 6, to: 7 },
+                { greater: 7 } // maximum score is 7.84xx
+            ]);
+
+            // set scale colors
+            ocs.colors(["rgb(252,245,245)",
+                "rgb(241,219,216)",
+                "rgb(229,190,185)",
+                "rgb(211,152,145)",
+                "rgb(192,117,109)",
+                "rgb(178,93,86)",
+                "rgb(150,33,31)"]);
+
+            // tell the series what to use as a colorRange (colorScale)
+            series.colorScale(ocs);
+
+            // Disables zoom On Mouse Wheel
+            chart.interactivity().zoomOnMouseWheel(true);
+            // Disables zoom on double click
+            chart.interactivity().keyboardZoomAndMove(true);
+            // Disables zoom on double click
+            chart.interactivity().zoomOnDoubleClick(true);
+
+
+            // set zoom
+            var clicked = true;
+            chart.listen("click", function (evt) {
+                if (clicked) {
+                    chart.zoomTo(3, evt.clientX, evt.clientY);
+                }
+                else {
+                    chart.zoomTo(0, evt.clientX, evt.clientY);
+                }
+                clicked = !clicked;
+            });
+
+            // set the container id
+            chart.container('container');
+
+            // set the fill for the regions you haven't defined in the dataSet
+            chart.unboundRegions().fill('#eee');
+
+            // draw the chart
+            chart.draw();
+        });
+    </script>
+</body>
+
+</html>

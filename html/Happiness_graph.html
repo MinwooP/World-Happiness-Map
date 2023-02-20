@@ -1,0 +1,133 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Linear Regression of Factors</title>
+<link rel="stylesheet" href="../css/Happiness_graph.css"/>
+
+<style>
+  table, th, td {
+    border:1px solid black;
+  }
+  </style>
+
+</head>
+
+<body>
+<h1 style="background-color:rgb(241,219,216);font-size: 28px;">Effect of Health, Economics, Generosity, and Freedom of Choices to Happiness Index Around the World</h1>
+<p class="title">
+<b>
+What factor do you think most important to determine your happiness? &#128512;
+</b>
+</p>
+<p class="story">
+The figure shown below are factors that affect the happiness index namely Health&#128657, Economics&#128176, Generosity&#128330, and Freedom of Choices &#127811
+from five years before. We want to compare what factor affect the most with the slope value. Curious about it? Check it out!
+<center style="background-color:rgb(229,190,185); color: rgb(255, 255, 255);"><b>2017</b></center>
+    <center>
+        <img src = "../data/GDP2017.png" alt ="cfg" width="200">
+        <img src = "../data/Health2017.png" alt ="cfg" width="200">
+        <img src = "../data/Free2017.png" alt ="cfg" width="200">
+        <img src = "../data/Generosity2017.png" alt ="cfg" width="200">
+    </center>
+    
+<p>
+</p>
+
+<center style="background-color:rgb(211,152,145); color: rgb(255, 255, 255);"><b>2018</b></center>
+    <center>
+        <img src = "../data/GDP2018.png" alt ="cfg" width="200">
+        <img src = "../data/Health2018.png" alt ="cfg" width="200">
+        <img src = "../data/Free2018.png" alt ="cfg" width="200">
+        <img src = "../data/Generosity2018.png" alt ="cfg" width="200">
+        </center>
+<p>
+</p>
+
+<center style="background-color:rgb(192,117,109); color: rgb(255, 255, 255);"><b>2019</b></center>
+    <center>
+        <img src = "../data/GDP2019.png" alt ="cfg" width="200">
+        <img src = "../data/Health2019.png"alt ="cfg" width="200">
+        <img src = "../data/Free2019.png" alt ="cfg" width="200">
+        <img src = "../data/Generosity2019.png" alt ="cfg" width="200">
+    </center>
+
+<p>
+</p>
+
+<center style="background-color:rgb(178,93,86); color: rgb(255, 255, 255);"><b>2020</b></center>
+    <center>
+        <img src = "../data/GDP2020.png" alt ="cfg" width="200">
+        <img src = "../data/Health2020.png" alt ="cfg" width="200">
+        <img src = "../data/Free2020.png" alt ="cfg" width="225">
+        <img src = "../data/Generosity2020.png" alt ="cfg" width="225">
+    </center>
+
+<p>
+</p>
+
+<center style="background-color:rgb(150,33,31); color: rgb(255, 255, 255);"><b>2021</b></center>
+    <center>
+        <img src = "../data/GDP2021.png" alt ="cfg" width="200">
+        <img src = "../data/Health2021.png" alt ="cfg" width="200">
+        <img src = "../data/Free2021.png" alt ="cfg" width="200">
+        <img src = "../data/Generosity2021.png" alt ="cfg" width="200">
+    </center>
+
+<p>
+</p>
+<center>
+<p class="title">
+<b>
+Is your guess corect?
+</b>
+</p>
+<p class="story">
+As we can see on table below, the most significant factor that affect our happiness is the freedom of choices!
+followed by health, GDP, and Generoisty. So what do you think? Still money can buy you a happiness?
+</p>
+</center>
+
+<center>
+<table style="width:5%">
+  <tr>
+    <th>Factor</th>
+    <th>Average Slope</th>
+    <th>Ranks</th>
+  </tr>
+  <tr>
+    <td>Freedom of Choices</td>
+    <td>4.1682</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>Health</td>
+    <td>1.7793</td>
+    <td>2</td>
+  </tr>
+   <tr>
+    <td>GDP</td>
+    <td>1.2266</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>Generosity</td>
+    <td>0.42428</td>
+    <td>4</td>
+  </tr>
+</table>
+</center>
+
+<input type="checkbox" id="toggle"/>
+    <label class="button" for="toggle"></label>
+    <nav class="nav">
+        <ul>
+            <a href="Happiness_map.html">World Happiness Map</a>
+            <a href="GDP_map.html">World GDP Map</a>
+            <a href="Health_map.html">World Health Map</a>
+            <a href="Freedom_map.html">World Freedom Map</a>
+            <a href="Generosity_map.html">World Generosity Map</a>
+        </ul> 
+    </nav>
+
+</body>
+</html>

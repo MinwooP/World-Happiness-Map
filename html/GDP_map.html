@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>World GDP map</title>
+    <link href="https://playground.anychart.com/efdxRDjm/iframe" rel="canonical" />
+
+    <link rel="stylesheet" href="../css/GDP_map.css"/>
+    <meta content="AJAX Chart,Chart from JSON,Choropleth Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot"
+        name="keywords" />
+    <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description" />
+
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;  
+            height: 100%;
+            margin: 0px 0px -25px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"> </div>
+    <input type="checkbox" id="toggle" />
+    <label class="button" for="toggle"></label>
+    <nav class="nav">
+        <ul>
+            <a href="Happiness_map.html">World Happiness Map</a>
+            <a href="Health_map.html">World Health Map</a>
+            <a href="Freedom_map.html">World Freedom Map</a>
+            <a href="Generosity_map.html">World Generosity Map</a>
+            <a href="Happiness_graph.html">Happiness Graph</a>
+        </ul> 
+    </nav>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-map.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/geodata/custom/world/world.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-data-adapter.min.js"></script>
+
+    <script type="module">
+        import gdp_data from '../data/2021_Data.json' assert {type: 'json'};
+        import geoId_data from '../data/Geo_Id.json' assert {type: 'json'};
+
+        anychart.onDocumentReady(function () {
+            var temp_data = [];
+
+            for (var i = 0; i < gdp_data.length; i++) {
+                var countryName = gdp_data[i]["Country name"]
+
+                for (var j = 0; j < geoId_data.length; j++) {
+                    if (countryName == geoId_data[j]["name"]) {
+                        temp_data.push({
+                            name: countryName,
+                            value: parseFloat(gdp_data[i]["Logged GDP per capita"]),
+                            id: geoId_data[j]["code"],
+                        })
+                        break;
+                    }
+                }
+            }
+            
+            // GDP data descending order
+            temp_data.sort(function(a, b) {
+                return parseFloat(b.value) - parseFloat(a.value);
+            })
+
+            console.log(temp_data);
+
+            var data = [];
+            for(var k=0; k<temp_data.length;k++){
+                data.push({
+                    id: temp_data[k].id,
+                    name: temp_data[k].name,
+                    value: temp_data[k].value,
+                    rank : k + 1
+                })
+            }
+
+            console.log(data);
+
+            // connect the data with the map
+            var chart = anychart.map(data);
+
+            chart.geoData(anychart.maps.world);
+
+            // specify the chart type and set the series 
+            var series = chart.choropleth(data);
+
+            // tooltip formatting
+            series.tooltip().format("GDP score: {%value}\nGDP ranking: {%rank}/147");
+
+            // set the chart title
+            // set the title and its preferences
+            chart.title().useHtml(true).hAlign('center');
+            chart.title('<span style= "font-size:27px; font-family:"sans-serif";">World GDP Map</span>');
+
+            var cr = chart.colorRange(true);
+            // colorRange.orientation('right');
+            // var marker = cr.marker();
+
+            // color scale ranges
+            var ocs = anychart.scales.ordinalColor([
+                { less: 6 }, // minimun GDP score is 6.63xx
+                { from: 6, to: 7 }, 
+                { from: 7, to: 8 },
+                { from: 8, to: 9 }, 
+                { from: 9, to: 10 },
+                { from: 10, to: 11 }, 
+                { greater: 11 } // maximum score is 11.64xx
+            ]);
+
+            // set scale colors
+            ocs.colors(["rgb(248,214,201)",
+                "rgb(240,174,147)",
+                "rgb(235,147,111)",
+                "rgb(231,119,75)",
+                "rgb(215,82,29)",
+                "rgb(157,59,21)",
+                "rgb(126,48,17)"]);
+
+            // tell the series what to use as a colorRange (colorScale)
+            series.colorScale(ocs);
+
+            // chart.interactivity(true);
+            // Disables zoom On Mouse Wheel
+            chart.interactivity().zoomOnMouseWheel(true);
+            // Disables zoom on double click
+            chart.interactivity().keyboardZoomAndMove(true);
+            // Disables zoom on double click
+            chart.interactivity().zoomOnDoubleClick(true);
+
+
+            // set zoom
+            var clicked = true;
+            chart.listen("click", function (evt) {
+                if (clicked) {
+                    chart.zoomTo(3, evt.clientX, evt.clientY);
+                }
+                else {
+                    chart.zoomTo(0, evt.clientX, evt.clientY);
+                }
+                clicked = !clicked;
+            });
+
+            // set the container id
+            chart.container('container');
+
+            // set the fill for the regions you haven't defined in the dataSet
+            chart.unboundRegions().fill('#eee');
+
+            // draw the chart
+            chart.draw();
+        });
+    </script>
+</body>
+
+</html>

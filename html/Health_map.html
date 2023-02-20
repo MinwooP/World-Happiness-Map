@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>World Health map</title>
+    <link href="https://playground.anychart.com/efdxRDjm/iframe" rel="canonical" />
+
+    <link rel="stylesheet" href="../css/Health_map.css"/>
+    <meta content="AJAX Chart,Chart from JSON,Choropleth Map,Geo Chart,Geo Visualization,JSON Chart,JSON Plot"
+        name="keywords" />
+    <meta content="AnyChart - JavaScript Charts designed to be embedded and integrated" name="description" />
+
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;  
+            height: 100%;
+            margin: 0px 0px -25px 0px;
+            padding: 0px 0px 0px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"> </div>
+    <input type="checkbox" id="toggle" />
+    <label class="button" for="toggle"></label>
+    <nav class="nav">
+        <ul>
+          <a href="Happiness_map.html">World Happiness Map</a>
+          <a href="GDP_map.html">World GDP Map</a>
+          <a href="Freedom_map.html">World Freedom Map</a>
+          <a href="Generosity_map.html">World Generosity Map</a>
+          <a href="Happiness_graph.html">Happiness Graph</a>
+        </ul> 
+    </nav>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-core.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-map.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/geodata/custom/world/world.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.15/proj4.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.7.1/js/anychart-data-adapter.min.js"></script>
+
+    <script type="module">
+        import health_data from '../data/2021_Data.json' assert {type: 'json'};
+        import geoId_data from '../data/Geo_Id.json' assert {type: 'json'};
+
+        anychart.onDocumentReady(function () {
+            var temp_data = [];
+
+            for (var i = 0; i < health_data.length; i++) {
+                var countryName = health_data[i]["Country name"]
+
+                for (var j = 0; j < geoId_data.length; j++) {
+                    if (countryName == geoId_data[j]["name"]) {
+                        temp_data.push({
+                            name: countryName,
+                            value: parseFloat(health_data[i]["Healthy life expectancy"]),
+                            id: geoId_data[j]["code"],
+                        })
+                        break;
+                    }
+                }
+            }
+            
+            // Health data descending order
+            temp_data.sort(function(a, b) {
+                return parseFloat(b.value) - parseFloat(a.value);
+            })
+
+            console.log(temp_data);
+
+            var data = [];
+            for(var k=0; k<temp_data.length;k++){
+                data.push({
+                    id: temp_data[k].id,
+                    name: temp_data[k].name,
+                    value: temp_data[k].value,
+                    rank : k + 1
+                })
+            }
+
+            // connect the data with the map
+            var chart = anychart.map(data);
+
+            // chart.interactivity().zoomOnMouseWheel(false);
+            // chart.crs("orthographic");
+
+            chart.geoData(anychart.maps.world);
+
+            // specify the chart type and set the series 
+            var series = chart.choropleth(data);
+
+            // tooltip formatting
+            series.tooltip().format("Health score: {%value}\nHealth ranking: {%rank}/147");
+
+            // set the chart title
+            // set the title and its preferences
+            chart.title().useHtml(true).hAlign('center');
+            chart.title('<span style= "font-size:27px; font-family:"sans-serif";">World Health Map</span>');
+
+            var cr = chart.colorRange(true);
+            // colorRange.orientation('right');
+            // var marker = cr.marker();
+
+            // color scale ranges
+            var ocs = anychart.scales.ordinalColor([
+                { less: 50 }, // minimun health score is 48.47xx
+                { from: 50, to: 54 },
+                { from: 54, to: 68 },
+                { from: 58, to: 62 },
+                { from: 62, to: 66 },
+                { from: 66, to: 70 },
+                { greater: 70 } // maximum score is 76.95xx
+            ]);
+
+            // set scale colors
+            ocs.colors(["rgb(194,234,204)",
+                "rgb(149,219,166)",
+                "rgb(103,203,128)",
+                "rgb(62,182,92)",
+                "rgb(52,152,77)",
+                "rgb(42,122,62)",
+                "rgb(29,84,43)"]);
+
+            // tell the series what to use as a colorRange (colorScale)
+            series.colorScale(ocs);
+
+            // chart.interactivity(true);
+            // Disables zoom On Mouse Wheel
+            chart.interactivity().zoomOnMouseWheel(true);
+            // Disables zoom on double click
+            chart.interactivity().keyboardZoomAndMove(true);
+            // Disables zoom on double click
+            chart.interactivity().zoomOnDoubleClick(true);
+
+
+            // set zoom
+            var clicked = true;
+            chart.listen("click", function (evt) {
+                if (clicked) {
+                    chart.zoomTo(3, evt.clientX, evt.clientY);
+                }
+                else {
+                    chart.zoomTo(0, evt.clientX, evt.clientY);
+                }
+                clicked = !clicked;
+            });
+
+            // set the container id
+            chart.container('container');
+
+            // set the fill for the regions you haven't defined in the dataSet
+            chart.unboundRegions().fill('#eee');
+
+            // draw the chart
+            chart.draw();
+        });
+    </script>
+</body>
+
+</html>
